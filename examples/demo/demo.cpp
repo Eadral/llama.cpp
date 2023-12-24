@@ -352,6 +352,8 @@ int main(int argc, char ** argv) {
         params.antiprompt.push_back("<|im_start|>user\n");
     }
 
+    params.antiprompt.push_back("<|im_end|>");
+
     // enable interactive mode if interactive start is specified
     if (params.interactive_first) {
         params.interactive = true;
@@ -751,6 +753,12 @@ int main(int argc, char ** argv) {
                     printf("%s", params.input_prefix.c_str());
                 }
 
+                if (params.chatml && is_antiprompt) {
+                    LOG("inserting chatml prefix\n");
+                    // n_consumed = embd_inp.size();
+                    embd_inp.insert(embd_inp.end(), cml_pfx.begin(), cml_pfx.end());
+                }
+
                 // color user input only
                 console::set_display(console::user_input);
 
@@ -825,7 +833,7 @@ int main(int argc, char ** argv) {
                     LOG("empty line, passing control back\n");
                 }
 
-                input_echo = false; // do not echo this again
+                input_echo = true; // do not echo this again
             }
 
             if (n_past > 0) {
